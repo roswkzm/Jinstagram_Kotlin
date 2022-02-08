@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.jinstagram.R
 
-class DetailViewFragment : Fragment() {
+class AlarmFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = LayoutInflater.from(activity).inflate(R.layout.fragment_detail, container, false)
+        val view = LayoutInflater.from(activity).inflate(R.layout.fragment_alarm, container, false)
         return view
     }
 }
