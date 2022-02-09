@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.jinstagram.navigation.*
@@ -26,6 +27,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        setToolbarDefault()
         when(item.itemId){
             R.id.action_home -> {
                 var detailViewFragment = DetailViewFragment()
@@ -53,6 +55,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 var userFragment = UserFragment()
                 var bundle = Bundle()
                 var uid = FirebaseAuth.getInstance().currentUser?.uid
+
                 bundle.putString("destinationUid", uid)
                 userFragment.arguments = bundle     // userFragment로 uid값 전송
                 supportFragmentManager.beginTransaction().replace(R.id.main_content, userFragment).commit()
@@ -60,5 +63,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             }
         }
         return false
+    }
+    // 기본적으로 툴바의 유저이름과 뒤로가기버튼을 나오지 않도록 만듬
+    fun setToolbarDefault(){
+        toolbar_username.visibility = View.GONE
+        toolbar_btn_back.visibility = View.GONE
+        toolbar_title_image.visibility = View.VISIBLE
     }
 }

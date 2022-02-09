@@ -1,5 +1,6 @@
 package com.example.jinstagram.navigation
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,10 +12,14 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.example.jinstagram.LoginActivity
+import com.example.jinstagram.MainActivity
 import com.example.jinstagram.R
 import com.example.jinstagram.navigation.model.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_user.view.*
 
 class UserFragment : Fragment() {
@@ -22,12 +27,39 @@ class UserFragment : Fragment() {
     var firestore : FirebaseFirestore? = null
     var uid : String? = null
     var auth : FirebaseAuth? = null
+    var currentUserUid : String? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         fragmentView = LayoutInflater.from(activity).inflate(R.layout.fragment_user, container, false)
         uid = arguments?.getString("destinationUid")    // MainActivity 화면에서 넘어온 값을 받아옴
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
+        currentUserUid = auth?.currentUser?.uid     // uid와 currentUserUid의 비교를 통해 자신의 UserFragment인지 상대방의 것인지 확인
+
+        if (uid == currentUserUid){
+            // 내 UserFragment 화면일 경우 로그아웃 버튼이 되며 로그인 페이지로 이동
+            fragmentView?.account_btn_follow_signout?.text = getString(R.string.signout)
+            fragmentView?.account_btn_follow_signout?.setOnClickListener {
+                activity?.finish()
+                startActivity(Intent(activity, LoginActivity::class.java))
+                auth?.signOut()
+            }
+        }else{
+            // 다른 상대방의 UserFragment일 경우
+            fragmentView?.account_btn_follow_signout?.text = getString(R.string.follow)     // 팔로우 버튼으로 텍스트 변경
+            var mainactivity = (activity as MainActivity)
+            // 상단의 툴바에 상대방의 id가 표시됨
+            mainactivity.toolbar_username?.text = arguments?.getString("userId")
+            // 뒤로가기 버튼을 누르면 홈화면으로 이동
+            mainactivity.toolbar_btn_back?.setOnClickListener {
+                mainactivity.bottom_navigation.selectedItemId = R.id.action_home
+            }
+            // 상단의 툴바 로고를 사라지게 만듬
+            mainactivity.toolbar_title_image?.visibility = View.GONE
+            // 상단의 툴바의 유저이름과 뒤로가기 버튼을 보이게 만듬
+            mainactivity.toolbar_username?.visibility = View.VISIBLE
+            mainactivity.toolbar_btn_back?.visibility = View.VISIBLE
+        }
 
         // RecyclerViewAdapter 연결
         fragmentView?.account_recyclerview?.adapter = UserFragmentRecyclerViewAdapter()

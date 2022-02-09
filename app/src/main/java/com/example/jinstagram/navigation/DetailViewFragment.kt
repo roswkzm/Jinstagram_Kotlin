@@ -12,6 +12,7 @@ import com.example.jinstagram.R
 import com.example.jinstagram.navigation.model.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_detail.view.*
 import kotlinx.android.synthetic.main.item_detail.view.*
@@ -41,6 +42,7 @@ class DetailViewFragment : Fragment() {
             firestore?.collection("images")?.orderBy("timestamp")?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                 contentDTOs.clear()
                 contentUidList.clear()
+                if (querySnapshot == null) return@addSnapshotListener
                 // for문으로 스냅샷에 넘어오는 데이터를 전부 읽어옴
                 for(snapshot in querySnapshot!!.documents){
                     var item = snapshot.toObject(ContentDTO::class.java)
@@ -88,7 +90,19 @@ class DetailViewFragment : Fragment() {
             }else{      // 좋아요 안누른경우
                 viewHolder.detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_favorite_border)
             }
+
+            // 프로필 이미지를 누르면 상대방 유저정보로 이동하기
+            viewHolder.detailviewitem_profile_image.setOnClickListener {
+                var fragment = UserFragment()
+                var bundle = Bundle()
+                // 프사의 주인 회원의 Uid값과 email을 UserFragment로 넘긴다
+                bundle.putString("destinationUid", contentDTOs[position].uid)
+                bundle.putString("userId", contentDTOs[position].userId)
+                fragment.arguments = bundle
+                activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.main_content,fragment)?.commit()
+            }
         }
+
 
         // 좋아요 버튼 누를시 수행구문
         fun favoriteEvent(position: Int){
