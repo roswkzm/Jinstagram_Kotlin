@@ -8,7 +8,7 @@ data class ContentDTO(
     var userId: String? = null,    // user의 email
     var timestamp: Long? = null,   // 사진 올린 시간
     var favoriteCount: Int = 0,    // 좋아요 갯수
-    var favorites: Map<String, Boolean> = HashMap()     // 중복 좋아요 방지 Boolean
+    var favorites: MutableMap<String, Boolean> = HashMap()     // 중복 좋아요 방지 Boolean
     )
 
 {
