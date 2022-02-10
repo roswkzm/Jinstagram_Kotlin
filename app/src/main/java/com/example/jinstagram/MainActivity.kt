@@ -1,6 +1,7 @@
 package com.example.jinstagram
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
@@ -10,9 +11,13 @@ import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.jinstagram.navigation.*
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
@@ -24,6 +29,27 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         // 기본 디폴트 화면 설정
         bottom_navigation.selectedItemId = R.id.action_home
+
+
+    }
+
+    // UserFragment에서 startActivityForResult에서 넘긴 사진 data 받
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == UserFragment.PICK_PROFILE_FROM_ALBUM && resultCode == Activity.RESULT_OK){
+            var imageUri = data?.data   // 사진의 uri
+            var uid = FirebaseAuth.getInstance().currentUser?.uid
+            var storageRef = FirebaseStorage.getInstance().reference.child("userProfileImages").child(uid!!)
+            // storageRef에 사진 저장하고 url 받아오
+            storageRef.putFile(imageUri!!).continueWithTask { task: Task<UploadTask.TaskSnapshot> ->
+                return@continueWithTask storageRef.downloadUrl
+            }.addOnSuccessListener { uri ->
+                var map = HashMap<String, Any>()
+                map["image"] = uri.toString()
+                // FireStore에 유저이미지의 사진을 HashMap 형태로 저장
+                FirebaseFirestore.getInstance().collection("profileImages").document(uid).set(map)
+            }
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
