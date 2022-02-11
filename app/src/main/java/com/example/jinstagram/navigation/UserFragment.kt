@@ -43,6 +43,12 @@ class UserFragment : Fragment() {
         currentUserUid = auth?.currentUser?.uid     // uid와 currentUserUid의 비교를 통해 자신의 UserFragment인지 상대방의 것인지 확인
 
         if (uid == currentUserUid){
+            // 회원 프사 설정 ( 회원이 선택한 사진의 결과를 MainActivity에 넘김)
+            fragmentView?.account_iv_profile?.setOnClickListener {
+                var photoPickerIntent = Intent(Intent.ACTION_PICK)
+                photoPickerIntent.type = "image/*"
+                activity?.startActivityForResult(photoPickerIntent,PICK_PROFILE_FROM_ALBUM)
+            }
             // 내 UserFragment 화면일 경우 로그아웃 버튼이 되며 로그인 페이지로 이동
             fragmentView?.account_btn_follow_signout?.text = getString(R.string.signout)
             fragmentView?.account_btn_follow_signout?.setOnClickListener {
@@ -75,12 +81,6 @@ class UserFragment : Fragment() {
         // 그리드 레이아웃을 사용하여 3개씩 뜰 수 있도록 함
         fragmentView?.account_recyclerview?.layoutManager = GridLayoutManager(activity, 3)
 
-        // 회원 프사 설정 ( 회원이 선택한 사진의 결과를 MainActivity에 넘김)
-        fragmentView?.account_iv_profile?.setOnClickListener {
-            var photoPickerIntent = Intent(Intent.ACTION_PICK)
-            photoPickerIntent.type = "image/*"
-            activity?.startActivityForResult(photoPickerIntent,PICK_PROFILE_FROM_ALBUM)
-        }
         getProfileImage()
         getFollowerAndFollowing()
         return fragmentView
@@ -192,6 +192,9 @@ class UserFragment : Fragment() {
 
     // 회원의 프사 연결부분
     fun getProfileImage(){
+        if(activity == null){
+            return
+        }
         firestore?.collection("profileImages")?.document(uid!!)?.addSnapshotListener { value, error ->
             if(value == null) return@addSnapshotListener    // 값이 없을경우 바로 리턴
             if(value.data != null){
