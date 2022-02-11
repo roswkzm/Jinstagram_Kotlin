@@ -179,13 +179,13 @@ class UserFragment : Fragment() {
             }
 
             // 상대방 계정에 내가 팔로우를 했을 경우
-           if(followDTO!!.followers.containsKey(currentUserUid)){
-               // 팔로우 취소
-               followDTO!!.followerCount = followDTO!!.followerCount -1     // 상대방 팔로우 숫자 -1
-               followDTO!!.followers.remove(currentUserUid!!)       // 상대방 팔로워에서 내 uid 제거
+            if(followDTO!!.followers.containsKey(currentUserUid)){
+                // 팔로우 취소
+                followDTO!!.followerCount = followDTO!!.followerCount -1     // 상대방 팔로우 숫자 -1
+                followDTO!!.followers.remove(currentUserUid!!)       // 상대방 팔로워에서 내 uid 제거
             }else{      // 상대방 계정을 내가 팔로우 안했을 경우
-               followDTO!!.followerCount = followDTO!!.followerCount +1     // 상대방 팔로우 숫자 +1
-               followDTO!!.followers[currentUserUid!!]  = true      // 상대방 팔로워에서 내 uid 추가
+                followDTO!!.followerCount = followDTO!!.followerCount +1     // 상대방 팔로우 숫자 +1
+                followDTO!!.followers[currentUserUid!!]  = true      // 상대방 팔로워에서 내 uid 추가
             }
             transaction.set(tsDocFollower, followDTO!!)
             return@runTransaction
