@@ -14,6 +14,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.jinstagram.R
 import com.example.jinstagram.navigation.model.ContentDTO
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.fragment_grid.view.*
 
 class GridFragment : Fragment() {
@@ -34,7 +35,7 @@ class GridFragment : Fragment() {
         var contentDTOs : ArrayList<ContentDTO> = arrayListOf()
 
         init {
-            firestore?.collection("images")?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+            firestore?.collection("images")?.orderBy("timestamp", Query.Direction.DESCENDING)?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                 if(querySnapshot == null) return@addSnapshotListener    // querySnapshot 이 null일 경우 종료
 
                 // 데이터 가져오기

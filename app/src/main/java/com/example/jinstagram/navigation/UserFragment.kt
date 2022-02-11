@@ -216,7 +216,7 @@ class UserFragment : Fragment() {
         var contentDTOs : ArrayList<ContentDTO> = arrayListOf()
 
         init {
-            firestore?.collection("images")?.whereEqualTo("uid", uid)?.orderBy("timestamp")?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+            firestore?.collection("images")?.whereEqualTo("uid", uid)?.orderBy("timestamp", Query.Direction.DESCENDING)?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                 if(querySnapshot == null) return@addSnapshotListener    // querySnapshot 이 null일 경우 종료
 
                 // 데이터 가져오기
