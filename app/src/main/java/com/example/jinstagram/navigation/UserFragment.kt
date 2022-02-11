@@ -114,6 +114,19 @@ class UserFragment : Fragment() {
 
 
     // 팔로우 버튼을 눌렀을 경우에 대한 함수
+    /*
+    팔로워 : 누가 나를 팔로우 함
+    팔로잉 : 내가 누구를 팔로우 함
+    If 상대 나를 팔로우 했다면
+
+    내 DB 부분
+    팔로워 숫자 +1
+    팔로워 -> 상대계정 추가
+
+    상대 DB부분
+    팔로잉 숫자 +1
+    팔로잉 -> 내계정 추가
+     */
     fun requestFollow(){
         // 여기서 uid는 DetailViewFragment에서 넘어온 대상의 uid이다.
 
@@ -175,8 +188,6 @@ class UserFragment : Fragment() {
             transaction.set(tsDocFollower, followDTO!!)
             return@runTransaction
         }
-
-
     }
 
     // 회원의 프사 연결부분
