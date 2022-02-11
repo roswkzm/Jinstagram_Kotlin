@@ -50,13 +50,6 @@ class UserFragment : Fragment() {
                 startActivity(Intent(activity, LoginActivity::class.java))
                 auth?.signOut()
             }
-            // 회원 프사 설정 ( 회원이 선택한 사진의 결과를 MainActivity에 넘김)
-            fragmentView?.account_iv_profile?.setOnClickListener {
-                var photoPickerIntent = Intent(Intent.ACTION_PICK)
-                photoPickerIntent.type = "image/*"
-                activity?.startActivityForResult(photoPickerIntent,PICK_PROFILE_FROM_ALBUM)
-                getProfileImage()
-            }
         }else{
             // 다른 상대방의 UserFragment일 경우
             fragmentView?.account_btn_follow_signout?.text = getString(R.string.follow)     // 팔로우 버튼으로 텍스트 변경
@@ -82,8 +75,13 @@ class UserFragment : Fragment() {
         // 그리드 레이아웃을 사용하여 3개씩 뜰 수 있도록 함
         fragmentView?.account_recyclerview?.layoutManager = GridLayoutManager(activity, 3)
 
-
-
+        // 회원 프사 설정 ( 회원이 선택한 사진의 결과를 MainActivity에 넘김)
+        fragmentView?.account_iv_profile?.setOnClickListener {
+            var photoPickerIntent = Intent(Intent.ACTION_PICK)
+            photoPickerIntent.type = "image/*"
+            activity?.startActivityForResult(photoPickerIntent,PICK_PROFILE_FROM_ALBUM)
+        }
+        getProfileImage()
         getFollowerAndFollowing()
         return fragmentView
     }
