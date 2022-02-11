@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.jinstagram.R
 import com.example.jinstagram.navigation.model.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
@@ -80,7 +81,12 @@ class DetailViewFragment : Fragment() {
             // 좋아요 갯수
             viewHolder.detailviewitem_favoritecounter_textview.text = "Likes ${contentDTOs[position].favoriteCount}"
             // 회원프사
-            Glide.with(holder.itemView.context).load(contentDTOs[position].imageUrl).into(viewHolder.detailviewitem_profile_image)
+            FirebaseFirestore.getInstance().collection("profileImages").document(contentDTOs[position].uid!!).get().addOnCompleteListener { task ->
+                if(task.isSuccessful){
+                    var url = task.result!!["image"]
+                    Glide.with(holder.itemView.context).load(url).apply(RequestOptions().circleCrop()).into(viewHolder.detailviewitem_profile_image)
+                }
+            }
             // 좋아요 버튼 클릭시
             viewHolder.detailviewitem_favorite_imageview.setOnClickListener {
                 favoriteEvent(position)
