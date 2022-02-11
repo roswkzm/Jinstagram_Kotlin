@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -24,6 +25,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_user.view.*
+import java.lang.Exception
 
 class UserFragment : Fragment() {
     var fragmentView : View? = null
@@ -192,16 +194,21 @@ class UserFragment : Fragment() {
 
     // 회원의 프사 연결부분
     fun getProfileImage(){
-        if(activity == null){
-            return
-        }
-        firestore?.collection("profileImages")?.document(uid!!)?.addSnapshotListener { value, error ->
-            if(value == null) return@addSnapshotListener    // 값이 없을경우 바로 리턴
-            if(value.data != null){
-                var url = value?.data!!["image"]    // 값 저장을 HashMap으로 했으므로 해당 uid에 저장되어있는 키를 이용해서 값을 꺼낸다.
-                Glide.with(this).load(url).apply(RequestOptions().circleCrop()).into(fragmentView?.account_iv_profile!!)
+        try {
+            if(activity == null){
+                return
             }
+            firestore?.collection("profileImages")?.document(uid!!)?.addSnapshotListener { value, error ->
+                if(value == null) return@addSnapshotListener    // 값이 없을경우 바로 리턴
+                if(value.data != null){
+                    var url = value?.data!!["image"]    // 값 저장을 HashMap으로 했으므로 해당 uid에 저장되어있는 키를 이용해서 값을 꺼낸다.
+                    Glide.with(this).load(url).apply(RequestOptions().circleCrop()).into(fragmentView?.account_iv_profile!!)
+                }
+            }
+        }catch (e : Exception){
+            Toast.makeText(context, "잠시 기다려주세요.", Toast.LENGTH_SHORT).show()
         }
+
     }
 
     // RecyclerView가 사용할 Adapter 생성
