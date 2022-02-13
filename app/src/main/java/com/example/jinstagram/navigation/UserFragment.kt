@@ -3,6 +3,7 @@ package com.example.jinstagram.navigation
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.jinstagram.LoginActivity
 import com.example.jinstagram.MainActivity
 import com.example.jinstagram.R
+import com.example.jinstagram.navigation.model.AlarmDTO
 import com.example.jinstagram.navigation.model.ContentDTO
 import com.example.jinstagram.navigation.model.FollowDTO
 import com.google.firebase.auth.FirebaseAuth
@@ -86,6 +88,10 @@ class UserFragment : Fragment() {
         getProfileImage()
         getFollowerAndFollowing()
         return fragmentView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
     }
 
     //화면의 팔로워, 팔로잉 바인딩
@@ -172,7 +178,8 @@ class UserFragment : Fragment() {
             if(followDTO == null){
                 followDTO = FollowDTO()
                 followDTO!!.followerCount = 1       // 팔로워 숫자 1
-                followDTO!!.followers[currentUserUid!!] = true  // 팔로워에 자신의 uid 등
+                followDTO!!.followers[currentUserUid!!] = true  // 팔로워에 자신의 uid 등록
+                followerAlarm(uid!!)        // 최초로 어떤 사람이 팔로우해도 알람이 울림
 
                 transaction.set(tsDocFollower, followDTO!!)
                 return@runTransaction
@@ -186,15 +193,26 @@ class UserFragment : Fragment() {
             }else{      // 상대방 계정을 내가 팔로우 안했을 경우
                 followDTO!!.followerCount = followDTO!!.followerCount +1     // 상대방 팔로우 숫자 +1
                 followDTO!!.followers[currentUserUid!!]  = true      // 상대방 팔로워에서 내 uid 추가
+                followerAlarm(uid!!)    // follow 버튼을 누르면 알람이 울리게
             }
             transaction.set(tsDocFollower, followDTO!!)
             return@runTransaction
         }
     }
 
+    // 팔로우 눌렀을 시 알람 구축
+    fun followerAlarm(destinationUid : String){
+        var alarmDTO = AlarmDTO()
+        alarmDTO.destinationUid = destinationUid
+        alarmDTO.userId = auth?.currentUser?.email
+        alarmDTO.uid = auth?.currentUser?.uid
+        alarmDTO.kind = 2
+        alarmDTO.timestamp = System.currentTimeMillis()
+        FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+    }
+
     // 회원의 프사 연결부분
     fun getProfileImage(){
-        try {
             if(activity == null){
                 return
             }
@@ -202,13 +220,10 @@ class UserFragment : Fragment() {
                 if(value == null) return@addSnapshotListener    // 값이 없을경우 바로 리턴
                 if(value.data != null){
                     var url = value?.data!!["image"]    // 값 저장을 HashMap으로 했으므로 해당 uid에 저장되어있는 키를 이용해서 값을 꺼낸다.
+                    Log.d("url값", url.toString())
                     Glide.with(this).load(url).apply(RequestOptions().circleCrop()).into(fragmentView?.account_iv_profile!!)
                 }
             }
-        }catch (e : Exception){
-            Toast.makeText(context, "잠시 기다려주세요.", Toast.LENGTH_SHORT).show()
-        }
-
     }
 
     // RecyclerView가 사용할 Adapter 생성

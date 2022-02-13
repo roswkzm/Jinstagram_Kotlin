@@ -2,6 +2,7 @@ package com.example.jinstagram.navigation
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.jinstagram.R
+import com.example.jinstagram.navigation.model.AlarmDTO
 import com.example.jinstagram.navigation.model.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -111,6 +113,7 @@ class DetailViewFragment : Fragment() {
             viewHolder.detailviewitem_comment_imageview.setOnClickListener { v ->
                 var intent = Intent(v.context, CommentActivity::class.java)
                 intent.putExtra("contentUid", contentUidList[position])
+                intent.putExtra("destinationUid", contentDTOs[position].uid)
                 startActivity(intent)
             }
         }
@@ -129,11 +132,26 @@ class DetailViewFragment : Fragment() {
                     contentDTO?.favorites.remove(uid)   // 좋아요 누른 회원 아이디 제거
                 }else{  // 좋아요가 눌리지 않았다면
                     contentDTO?.favoriteCount = contentDTO?.favoriteCount +1    // 좋아요 +1
-                    contentDTO?.favorites[uid!!] = true // uid 추
+                    contentDTO?.favorites[uid!!] = true // uid 추가
+                    favoriteAlarm(contentDTOs[position].uid!!)      // 좋아요를 누른다면 알람fun에 해당유저 uid넘기기
                 }
                 // 트랜잭션의 결과를 서버로 되돌려줌
                 transaction.set(tsDoc, contentDTO)
             }
+        }
+
+        // 좋아요 알람설정 구축
+        fun favoriteAlarm(destinationUid : String){
+            var alarmDTO = AlarmDTO()
+            // 상대방 Uid에 파라미터로 넘어온 destinationUid를 받음
+            alarmDTO.destinationUid = destinationUid
+            alarmDTO.userId = FirebaseAuth.getInstance().currentUser?.email     // 내 email
+            alarmDTO.uid = FirebaseAuth.getInstance().currentUser?.uid          // 내 uid
+            alarmDTO.kind = 0
+            alarmDTO.timestamp = System.currentTimeMillis()
+            FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+
+
         }
     }
 }
