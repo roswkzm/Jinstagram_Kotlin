@@ -12,6 +12,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.jinstagram.R
 import com.example.jinstagram.navigation.model.AlarmDTO
 import com.example.jinstagram.navigation.model.ContentDTO
+import com.example.jinstagram.navigation.util.FcmPush
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -58,6 +59,10 @@ class CommentActivity : AppCompatActivity() {
         alarmDTO.timestamp = System.currentTimeMillis()
         alarmDTO.message = message
         FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+
+        // 푸쉬 알람 설정
+        var msg = FirebaseAuth.getInstance().currentUser?.email + " " +getString(R.string.alarm_comment) + " of " + message
+        FcmPush.instance.sendMessage(destinationUid, "Jinstagram", msg)
     }
 
     // RecyclerView 어댑터 생성

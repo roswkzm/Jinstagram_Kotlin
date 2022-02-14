@@ -22,6 +22,7 @@ import com.example.jinstagram.R
 import com.example.jinstagram.navigation.model.AlarmDTO
 import com.example.jinstagram.navigation.model.ContentDTO
 import com.example.jinstagram.navigation.model.FollowDTO
+import com.example.jinstagram.navigation.util.FcmPush
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -209,6 +210,10 @@ class UserFragment : Fragment() {
         alarmDTO.kind = 2
         alarmDTO.timestamp = System.currentTimeMillis()
         FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+
+        // 푸쉬 알람 설정
+        var message = auth?.currentUser?.email + getString(R.string.alarm_follow)
+        FcmPush.instance.sendMessage(destinationUid, "Jinstagram", message)
     }
 
     // 회원의 프사 연결부분
