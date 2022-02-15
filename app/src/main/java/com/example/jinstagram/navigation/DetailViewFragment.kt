@@ -20,6 +20,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_detail.view.*
+import kotlinx.android.synthetic.main.fragment_user.view.*
 import kotlinx.android.synthetic.main.item_detail.view.*
 
 // 1번째 프래그 먼트( 사용자들의 게시물 확인)
@@ -94,6 +95,16 @@ class DetailViewFragment : Fragment() {
             viewHolder.detailviewitem_favorite_imageview.setOnClickListener {
                 favoriteEvent(position)
             }
+
+            // 회원 사진 클릭시
+            viewHolder.detailviewitem_imageview_content.setOnClickListener {
+                var intent = Intent(context, ContentDetailActivity::class.java)
+                intent.putExtra("destinationUid", contentDTOs[position].uid)
+                intent.putExtra("userEmail", contentDTOs[position].userId)
+                intent.putExtra("timestamp", contentDTOs[position].timestamp)
+                startActivity(intent)
+            }
+
             // 만약 ContentDto의 MutableMap에 내 uid가 포함되어 있을경우( 좋아요 누른경우)
             if (contentDTOs[position].favorites.containsKey(uid)){
                 viewHolder.detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_favorite)

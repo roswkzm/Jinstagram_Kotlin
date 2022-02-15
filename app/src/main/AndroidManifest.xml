@@ -13,6 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".navigation.ContentDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".navigation.CommentActivity"
             android:exported="false" />
         <activity
@@ -51,6 +54,7 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/push_icon" />

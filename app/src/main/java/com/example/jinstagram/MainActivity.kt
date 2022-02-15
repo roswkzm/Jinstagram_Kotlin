@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.jinstagram.navigation.*
@@ -23,6 +24,8 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.activity_main.*
+
+var waitTime = 0L
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,5 +119,14 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         toolbar_username.visibility = View.GONE
         toolbar_btn_back.visibility = View.GONE
         toolbar_title_image.visibility = View.VISIBLE
+    }
+
+    override fun onBackPressed() {
+        if(System.currentTimeMillis() - waitTime >=1500 ) {
+            waitTime = System.currentTimeMillis()
+            Toast.makeText(this,"뒤로가기 버튼을 한번 더 누르면 종료됩니다.",Toast.LENGTH_SHORT).show()
+        } else {
+            finish() // 액티비티 종료
+        }
     }
 }

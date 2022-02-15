@@ -1,5 +1,6 @@
 package com.example.jinstagram.navigation
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.os.Bundle
@@ -28,7 +29,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_user.view.*
-import java.lang.Exception
 
 class UserFragment : Fragment() {
     var fragmentView : View? = null
@@ -218,7 +218,7 @@ class UserFragment : Fragment() {
 
     // 회원의 프사 연결부분
     fun getProfileImage(){
-            if(activity == null){
+            if(activity == null) {
                 return
             }
             firestore?.collection("profileImages")?.document(uid!!)?.addSnapshotListener { value, error ->
@@ -268,7 +268,19 @@ class UserFragment : Fragment() {
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             var imageview = (holder as CustomViewHolder).imageview
             Glide.with(holder.itemView.context).load(contentDTOs[position].imageUrl).apply(RequestOptions().centerCrop()).into(imageview)
+            imageview.setOnClickListener {
+                var intent = Intent(context, ContentDetailActivity::class.java)
+                intent.putExtra("destinationUid", contentDTOs[position].uid)
+                intent.putExtra("userEmail", contentDTOs[position].userId)
+                intent.putExtra("timestamp", contentDTOs[position].timestamp)
+                startActivity(intent)
+            }
         }
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("종료","종료")
     }
 }
