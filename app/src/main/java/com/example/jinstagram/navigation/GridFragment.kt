@@ -1,5 +1,6 @@
 package com.example.jinstagram.navigation
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -67,6 +68,14 @@ class GridFragment : Fragment() {
             var imageview = (holder as CustomViewHolder).imageview
             Glide.with(holder.itemView.context).load(contentDTOs[position].imageUrl).apply(
                 RequestOptions().centerCrop()).into(imageview)
+
+            imageview.setOnClickListener {
+                var intent = Intent(context, ContentDetailActivity::class.java)
+                intent.putExtra("destinationUid", contentDTOs[position].uid)
+                intent.putExtra("userEmail", contentDTOs[position].userId)
+                intent.putExtra("timestamp", contentDTOs[position].timestamp)
+                startActivity(intent)
+            }
         }
 
     }
