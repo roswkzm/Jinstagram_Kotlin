@@ -60,13 +60,13 @@
                 android:id="@+id/conetntdetail_iv_favorite"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:src="@drawable/ic_favorite_border"/>
+                android:src="@drawable/ic_favorite_border" />
 
             <ImageView
                 android:id="@+id/conetntdetail_iv_comment"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:src="@drawable/ic_chat_black"/>
+                android:src="@drawable/ic_chat_black" />
 
         </LinearLayout>
 
